@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>DopamineScan // Test Neurocognitivo de 60 Segundos</title>
+    
+    <!-- Meta tags for social previews -->
+    <meta name="description" content="Evalúa tu nivel de saturación dopamínica, reflejos psicomotores y freno contra el scroll compulsivo en 60 segundos.">
+    <meta property="og:title" content="DopamineScan // Test Neurocognitivo de 60s">
+    <meta property="og:description" content="¿Cómo está tu atención hoy? Descubre tu Arquetipo Neurocognitivo y vida media de enfoque.">
+    <meta property="og:type" content="website">
+    <meta name="theme-color" content="#080c14">
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="ambient-glow"></div>
+
+    <main class="app-container">
+        <!-- Top Navbar -->
+        <header class="top-navbar">
+            <div class="brand-badge">
+                <span class="brand-pulse"></span>
+                <span>DOPAMINESCAN</span>
+            </div>
+            <button class="icon-button" id="mute-toggle-btn" type="button" aria-label="Alternar silencio">
+                <span id="mute-icon">🔊</span>
+            </button>
+        </header>
+
+        <!-- Progress Bar Track -->
+        <div class="progress-track" aria-label="Progreso del test">
+            <div class="progress-fill" id="progress-bar-fill"></div>
+        </div>
+
+        <!-- SCREEN 1: INTRO / ONBOARDING -->
+        <section class="screen active-screen" id="screen-intro">
+            <div class="intro-hero">
+                <div class="hero-radar-icon">⚡</div>
+                <h1 class="hero-title">¿Cómo está tu cerebro hoy?</h1>
+                <p class="hero-subtitle">
+                    4 micro-pruebas psicométricas en <strong>60 segundos</strong> para medir tu saturación dopamínica, reflejos y resistencia al scroll compulsivo.
+                </p>
+
+                <div class="feature-pill-grid">
+                    <div class="feature-pill">
+                        <div class="feature-pill-title"><span>⏱️</span> 60 Segundos</div>
+                        <div class="feature-pill-desc">Rápido, dinámico y sin rodeos</div>
+                    </div>
+                    <div class="feature-pill">
+                        <div class="feature-pill-title"><span>🧠</span> PVT + Go/No-Go</div>
+                        <div class="feature-pill-desc">Milisegundos reales de reacción</div>
+                    </div>
+                    <div class="feature-pill">
+                        <div class="feature-pill-title"><span>🔒</span> Cero Registro</div>
+                        <div class="feature-pill-desc">100% privado en tu navegador</div>
+                    </div>
+                    <div class="feature-pill">
+                        <div class="feature-pill-title"><span>📲</span> Tarjeta 9:16</div>
+                        <div class="feature-pill-desc">Lista para Instagram / WhatsApp</div>
+                    </div>
+                </div>
+
+                <button class="btn-primary" id="btn-start-test" type="button">
+                    <span>INICIAR TEST (60s)</span>
+                    <span>⚡</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- SCREEN 2: ACTIVE ASSESSMENT STAGE -->
+        <section class="screen" id="screen-stage">
+            <div id="stage-container">
+                <!-- Phases injected dynamically: PVT, Go/No-Go, Memory, ScreenTime -->
+            </div>
+        </section>
+
+        <!-- SCREEN 3: RESULTS & VIRAL CARD -->
+        <section class="screen" id="screen-results">
+            <div class="results-card">
+                <span class="badge badge-emerald">EVALUACIÓN COMPLETADA</span>
+
+                <!-- Central Gauge -->
+                <div class="dsi-gauge-wrapper" id="dsi-circle-meter">
+                    <div class="dsi-gauge-inner">
+                        <span class="dsi-gauge-value" id="res-dsi-value">0%</span>
+                        <span class="dsi-gauge-label">SATURACIÓN</span>
+                    </div>
+                </div>
+
+                <!-- Archetype Card -->
+                <div class="archetype-banner">
+                    <div class="arch-header">
+                        <span class="arch-emoji" id="res-arch-emoji">🧠</span>
+                        <div>
+                            <div class="arch-name" id="res-arch-name">Arquetipo</div>
+                            <span class="badge badge-cyan" id="res-arch-badge">Perfil</span>
+                        </div>
+                    </div>
+                    <p class="arch-summary" id="res-arch-summary">Resumen neurocognitivo</p>
+                    <div class="arch-rec-box" id="res-arch-rec">Recomendación de enfoque</div>
+                </div>
+
+                <!-- 2x2 Telemetry Grid -->
+                <div class="results-grid">
+                    <div class="result-stat-box">
+                        <div class="stat-box-label">Vida Media Atención</div>
+                        <div class="stat-box-value text-cyan" id="res-half-life">0 min</div>
+                        <div class="stat-box-desc">Enfoque sin distracción</div>
+                    </div>
+
+                    <div class="result-stat-box">
+                        <div class="stat-box-label">Reflejos (PVT)</div>
+                        <div class="stat-box-value text-emerald" id="res-pvt-rt">0 ms</div>
+                        <div class="stat-box-desc">Velocidad psicomotora</div>
+                    </div>
+
+                    <div class="result-stat-box">
+                        <div class="stat-box-label">Freno Inhibitorio</div>
+                        <div class="stat-box-value text-amber" id="res-gonogo-dp">0 d'</div>
+                        <div class="stat-box-desc">Resistencia al scroll</div>
+                    </div>
+
+                    <div class="result-stat-box">
+                        <div class="stat-box-label">Rango Poblacional</div>
+                        <div class="stat-box-value text-purple" id="res-percentile">Top 0%</div>
+                        <div class="stat-box-desc">Frente a la media digital</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Canvas Story Card Preview Section -->
+            <div class="card-preview-section">
+                <div class="card-preview-header">
+                    <span>📲</span>
+                    <span>Tu Tarjeta para Stories / WhatsApp (9:16 HD)</span>
+                </div>
+                <div class="card-preview-container">
+                    <canvas id="card-preview-canvas" width="1080" height="1920"></canvas>
+                </div>
+            </div>
+
+            <!-- Action Buttons Stack -->
+            <div class="action-buttons-stack">
+                <button class="btn-primary" id="btn-download-card" type="button">
+                    <span>Descargar Tarjeta (PNG HD)</span>
+                    <span>📥</span>
+                </button>
+                <button class="btn-secondary" id="btn-share-card" type="button">
+                    <span>Compartir Reto en Redes</span>
+                    <span>🚀</span>
+                </button>
+                <button class="btn-secondary" id="btn-copy-challenge" type="button">
+                    <span>Copiar Reto</span>
+                    <span>📋</span>
+                </button>
+                <button class="btn-secondary" id="btn-restart-test" type="button">
+                    <span>Repetir Test</span>
+                    <span>🔄</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            Engineered under cognitive science standards • Open Source under MIT License
+        </footer>
+    </main>
+
+    <!-- Scripts -->
+    <script src="js/audio.js"></script>
+    <script src="js/scoring.js"></script>
+    <script src="js/canvas_card.js"></script>
+    <script src="js/pvt.js"></script>
+    <script src="js/gonogo.js"></script>
+    <script src="js/memory.js"></script>
+    <script src="js/screentime.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
