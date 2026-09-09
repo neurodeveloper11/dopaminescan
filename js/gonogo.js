@@ -47,14 +47,14 @@ class GoNoGoPhase {
                 </p>
 
                 <div class="gonogo-arena">
-                    <button class="gonogo-target-btn state-ready" id="gonogo-btn" type="button">
-                        <div class="gonogo-symbol" id="gonogo-symbol">👆</div>
-                        <div class="gonogo-text" id="gonogo-text">¡ESTOY LISTO!</div>
+                    <button class="gonogo-target-btn state-countdown countdown-step-3" id="gonogo-btn" type="button">
+                        <div class="gonogo-symbol" id="gonogo-symbol">3</div>
+                        <div class="gonogo-text" id="gonogo-text">🟢 VERDE = ¡TOCA!</div>
                     </button>
                 </div>
 
                 <div class="phase-footer-feedback" id="gonogo-feedback">
-                    Lee la regla arriba y toca el botón cuando estés listo
+                    Regla: Toca en Verde (🟢) y detén tu dedo en Rojo (🛑)
                 </div>
             </div>
         `;
@@ -78,38 +78,52 @@ class GoNoGoPhase {
         this.hits = 0;
         this.falseAlarms = 0;
         this.goReactionTimes = [];
-        this.state = 'READY';
-
-        this.gonogoBtn.className = 'gonogo-target-btn state-ready';
-        this.gonogoSymbol.textContent = '👆';
-        this.gonogoText.textContent = '¡ESTOY LISTO!';
-        this.gonogoFeedback.textContent = 'Lee la regla arriba y toca el botón cuando estés listo';
-        this.gonogoFeedback.className = 'phase-footer-feedback';
-        this.gonogoCounter.textContent = 'Preparación (8 ensayos)';
+        this.startCountdown();
     }
 
     startCountdown() {
         this.state = 'COUNTDOWN';
-        this.gonogoBtn.className = 'gonogo-target-btn state-countdown';
+        this.gonogoCounter.textContent = 'Iniciando en 3s...';
 
         let count = 3;
         const steps = {
-            3: { symbol: '3', text: 'PREPÁRATE...', feedback: 'Verde = ¡TOCA! | Rojo = ¡FRENA!', freq: 440 },
-            2: { symbol: '2', text: 'ATENTO...', feedback: 'Mantén el pulgar listo', freq: 554.37 },
-            1: { symbol: '1', text: '¡CONCÉNTRATE!', feedback: 'Frena el impulso si ves rojo', freq: 659.25 }
+            3: { 
+                symbol: '3', 
+                text: '🟢 VERDE = ¡TOCA!', 
+                feedback: 'Regla 1: Toca tan rápido como puedas cuando veas verde', 
+                freq: 440,
+                cls: 'countdown-step-3'
+            },
+            2: { 
+                symbol: '2', 
+                text: '🛑 ROJO = ¡FRENA!', 
+                feedback: 'Regla 2: ¡Detén tu dedo si la pantalla se pone roja!', 
+                freq: 554.37,
+                cls: 'countdown-step-2'
+            },
+            1: { 
+                symbol: '1', 
+                text: '⚡ ¡CONCÉNTRATE!', 
+                feedback: 'Controla el impulso del scroll...', 
+                freq: 659.25,
+                cls: 'countdown-step-1'
+            }
         };
 
         const tick = () => {
             if (count > 0) {
-                this.gonogoSymbol.textContent = steps[count].symbol;
-                this.gonogoText.textContent = steps[count].text;
-                this.gonogoFeedback.textContent = steps[count].feedback;
-                this.gonogoFeedback.className = 'phase-footer-feedback text-emerald';
+                const s = steps[count];
+                this.gonogoBtn.className = `gonogo-target-btn state-countdown ${s.cls}`;
+                this.gonogoSymbol.textContent = s.symbol;
+                this.gonogoText.textContent = s.text;
+                this.gonogoFeedback.textContent = s.feedback;
+                this.gonogoCounter.textContent = `Iniciando en ${count}s...`;
+
                 if (window.sounds && window.sounds.playNote) {
-                    window.sounds.playNote(steps[count].freq, 0.15);
+                    window.sounds.playNote(s.freq, 0.16);
                 }
                 count--;
-                this.countdownTimer = setTimeout(tick, 950);
+                this.countdownTimer = setTimeout(tick, 1000);
             } else {
                 this.state = 'ACTIVE_TEST';
                 this.nextTrial();
@@ -174,12 +188,6 @@ class GoNoGoPhase {
     }
 
     handleTap() {
-        if (this.state === 'READY') {
-            if (window.sounds) window.sounds.playTap();
-            this.startCountdown();
-            return;
-        }
-
         if (this.state === 'COUNTDOWN') return;
 
         if (!this.trialActive || this.hasResponded) return;

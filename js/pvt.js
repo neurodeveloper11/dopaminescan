@@ -33,15 +33,15 @@ class PVTPhase {
                 </p>
 
                 <div class="pvt-button-wrapper">
-                    <button class="pvt-action-btn state-ready" id="pvt-btn" type="button">
-                        <span class="pvt-icon" id="pvt-icon">👆</span>
-                        <span class="pvt-label" id="pvt-label">¡ESTOY LISTO!</span>
-                        <span class="pvt-timer" id="pvt-timer">Toca para empezar</span>
+                    <button class="pvt-action-btn state-countdown countdown-step-3" id="pvt-btn" type="button">
+                        <span class="pvt-icon" id="pvt-icon">3</span>
+                        <span class="pvt-label" id="pvt-label">🟢 TOCA EN VERDE</span>
+                        <span class="pvt-timer" id="pvt-timer">¡Tan rápido como puedas!</span>
                     </button>
                 </div>
 
                 <div class="phase-footer-feedback" id="pvt-feedback">
-                    Lee la instrucción arriba y toca el botón cuando estés listo
+                    Regla: Toca la pantalla en cuanto el botón cambie a verde
                 </div>
             </div>
         `;
@@ -66,41 +66,57 @@ class PVTPhase {
         this.currentTrial = 0;
         this.reactionTimes = [];
         this.anticipations = 0;
-        this.state = 'READY';
-
-        this.pvtBtn.className = 'pvt-action-btn state-ready';
-        this.pvtIcon.textContent = '👆';
-        this.pvtLabel.textContent = '¡ESTOY LISTO!';
-        this.pvtTimer.textContent = 'Toca para empezar';
-        this.pvtTimer.style.opacity = '0.7';
-        this.pvtFeedback.textContent = 'Lee la instrucción arriba y toca el botón cuando estés listo';
-        this.pvtFeedback.className = 'phase-footer-feedback';
-        this.pvtCounter.textContent = 'Preparación (Ensayo 1 de 3)';
+        this.startCountdown();
     }
 
     startCountdown() {
         this.state = 'COUNTDOWN';
-        this.pvtBtn.className = 'pvt-action-btn state-countdown';
-        this.pvtTimer.style.opacity = '0';
+        this.pvtCounter.textContent = 'Iniciando en 3s...';
+        this.pvtTimer.style.opacity = '1';
 
         let count = 3;
         const steps = {
-            3: { label: 'PREPÁRATE...', feedback: 'Apoya tu pulgar sobre el botón', freq: 440 },
-            2: { label: 'ATENTO...', feedback: 'Enfoca tu mirada en el centro', freq: 554.37 },
-            1: { label: '¡CONCÉNTRATE!', feedback: 'En cualquier milisegundo cambiará a verde...', freq: 659.25 }
+            3: { 
+                num: '3', 
+                label: '🟢 TOCA EN VERDE', 
+                timer: '¡Tan rápido como puedas!', 
+                feedback: 'Regla 1: Toca la pantalla cuando el botón sea verde', 
+                freq: 440,
+                cls: 'countdown-step-3'
+            },
+            2: { 
+                num: '2', 
+                label: '🔴 NO TE ADELANTES', 
+                timer: 'Espera la señal', 
+                feedback: 'Regla 2: Mantén el pulgar listo sin tocar antes', 
+                freq: 554.37,
+                cls: 'countdown-step-2'
+            },
+            1: { 
+                num: '1', 
+                label: '⚡ ¡CONCÉNTRATE!', 
+                timer: '¡Listos... ya!', 
+                feedback: '¡Atención plena! Cambiará en cualquier milisegundo...', 
+                freq: 659.25,
+                cls: 'countdown-step-1'
+            }
         };
 
         const tick = () => {
             if (count > 0) {
-                this.pvtIcon.textContent = count;
-                this.pvtLabel.textContent = steps[count].label;
-                this.pvtFeedback.textContent = steps[count].feedback;
-                this.pvtFeedback.className = 'phase-footer-feedback text-cyan';
+                const s = steps[count];
+                this.pvtBtn.className = `pvt-action-btn state-countdown ${s.cls}`;
+                this.pvtIcon.textContent = s.num;
+                this.pvtLabel.textContent = s.label;
+                this.pvtTimer.textContent = s.timer;
+                this.pvtFeedback.textContent = s.feedback;
+                this.pvtCounter.textContent = `Iniciando en ${count}s...`;
+
                 if (window.sounds && window.sounds.playNote) {
-                    window.sounds.playNote(steps[count].freq, 0.15);
+                    window.sounds.playNote(s.freq, 0.16);
                 }
                 count--;
-                this.countdownTimer = setTimeout(tick, 950);
+                this.countdownTimer = setTimeout(tick, 1000);
             } else {
                 this.nextTrial();
             }
@@ -158,12 +174,6 @@ class PVTPhase {
     }
 
     handleTap() {
-        if (this.state === 'READY') {
-            if (window.sounds) window.sounds.playTap();
-            this.startCountdown();
-            return;
-        }
-
         if (this.state === 'COUNTDOWN') {
             return;
         }
