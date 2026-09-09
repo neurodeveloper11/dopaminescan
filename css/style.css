@@ -29,6 +29,24 @@
     --ease-elastic: cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
+[data-theme="light"] {
+    --bg-base: #f1f5f9;                 /* Blanco Grisáceo (Slate-100) */
+    --bg-surface: #ffffff;              /* Blanco puro para tarjetas */
+    --bg-surface-elevated: #f8fafc;     /* Slate-50 elevado */
+    --border-subtle: #e2e8f0;           /* Slate-200 */
+    --border-glow: #cbd5e1;             /* Slate-300 */
+    
+    --text-primary: #0f172a;           /* Slate-900 */
+    --text-secondary: #475569;         /* Slate-600 */
+    --text-muted: #64748b;             /* Slate-500 */
+    
+    --color-emerald: #059669;          /* Emerald accesible */
+    --color-cyan: #0284c7;             /* Sky-600 */
+    --color-amber: #d97706;            /* Amber-600 */
+    --color-coral: #e11d48;            /* Rose-600 */
+    --color-purple: #7c3aed;           /* Violet-600 */
+}
+
 *, *::before, *::after {
     box-sizing: border-box;
     margin: 0;
@@ -82,6 +100,12 @@ body {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 12px;
+}
+
+.navbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .brand-badge {
@@ -763,3 +787,113 @@ body {
 .app-footer a:hover {
     text-decoration: underline;
 }
+
+/* ============================================================
+   LIGHT THEME (Blanco Grisáceo) COMPONENT OVERRIDES
+   ============================================================ */
+[data-theme="light"] {
+    background-color: var(--bg-base);
+}
+
+[data-theme="light"] body {
+    background-color: var(--bg-base);
+    color: var(--text-primary);
+}
+
+[data-theme="light"] .ambient-glow {
+    background: radial-gradient(ellipse at top, rgba(2, 132, 199, 0.08), transparent 70%);
+}
+
+[data-theme="light"] .icon-button {
+    background: #ffffff;
+    border-color: #e2e8f0;
+    color: #0f172a;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+[data-theme="light"] .progress-track {
+    background: #e2e8f0;
+}
+
+[data-theme="light"] .feature-pill {
+    background: #ffffff;
+    border-color: #e2e8f0;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+}
+
+[data-theme="light"] .phase-card,
+[data-theme="light"] .results-card {
+    background: #ffffff;
+    border-color: #e2e8f0;
+    box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.06);
+}
+
+[data-theme="light"] .pvt-action-btn.state-waiting {
+    background: #fff1f2;
+    border-color: #fecdd3;
+    color: #9f1239;
+}
+
+[data-theme="light"] .pvt-action-btn.state-recorded {
+    background: #ecfdf5;
+    border-color: #a7f3d0;
+    color: #065f46;
+}
+
+[data-theme="light"] .gonogo-target-btn.state-blank {
+    background: #f8fafc;
+    border-color: #e2e8f0;
+}
+
+[data-theme="light"] .memory-tile {
+    background: #f8fafc;
+    border-color: #e2e8f0;
+}
+
+[data-theme="light"] .screentime-btn {
+    background: #ffffff;
+    border-color: #e2e8f0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+}
+
+[data-theme="light"] .screentime-btn.selected {
+    background: #fffbeb;
+    border-color: var(--color-amber);
+}
+
+[data-theme="light"] .dsi-gauge-wrapper {
+    background: #ffffff;
+    border-color: var(--color-emerald);
+    box-shadow: 0 4px 25px rgba(0, 0, 0, 0.07);
+}
+
+[data-theme="light"] .archetype-banner {
+    background: #f8fafc;
+    border-color: #e2e8f0;
+}
+
+[data-theme="light"] .arch-rec-box {
+    background: #f1f5f9;
+    border-left-color: var(--color-cyan);
+    color: #334155;
+}
+
+[data-theme="light"] .result-stat-box {
+    background: #f8fafc;
+    border-color: #e2e8f0;
+}
+
+[data-theme="light"] .card-preview-container {
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+}
+
+[data-theme="light"] .btn-secondary {
+    background: #ffffff;
+    border-color: #cbd5e1;
+    color: #0f172a;
+}
+
+[data-theme="light"] .btn-secondary:active {
+    background: #f1f5f9;
+}
+

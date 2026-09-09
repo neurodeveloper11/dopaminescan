@@ -1,12 +1,15 @@
 /**
  * High-Definition 1080x1920 (9:16) Canvas Story Card Generator for DopamineScan.
  * 
- * Generates an ultra-crisp poster formatted for Instagram Stories, TikTok, and WhatsApp Status.
+ * Supports dual aesthetics:
+ * 1. Dark OLED Cyber-Clean (Default)
+ * 2. Blanco Grisáceo (Light Executive)
+ * 
  * 100% Neutral viral copy: zero self-promotion, 100% focused on the challenge and user archetype.
  */
 
 const CanvasCardGenerator = {
-    render(result, canvas) {
+    render(result, canvas, theme) {
         if (!canvas) {
             canvas = document.createElement('canvas');
         }
@@ -19,23 +22,34 @@ const CanvasCardGenerator = {
         const arch = result.archetype;
         const accentColor = arch.color || "#10b981";
 
+        if (!theme) {
+            theme = (document.documentElement && document.documentElement.getAttribute('data-theme')) || 'dark';
+        }
+        const isLight = (theme === 'light');
+
         // 1. Background Gradient
         const bgGrad = ctx.createLinearGradient(0, 0, 0, H);
-        bgGrad.addColorStop(0, '#070a12');
-        bgGrad.addColorStop(0.5, '#0b1120');
-        bgGrad.addColorStop(1, '#05070e');
+        if (isLight) {
+            bgGrad.addColorStop(0, '#f8fafc');
+            bgGrad.addColorStop(0.5, '#f1f5f9');
+            bgGrad.addColorStop(1, '#e2e8f0');
+        } else {
+            bgGrad.addColorStop(0, '#070a12');
+            bgGrad.addColorStop(0.5, '#0b1120');
+            bgGrad.addColorStop(1, '#05070e');
+        }
         ctx.fillStyle = bgGrad;
         ctx.fillRect(0, 0, W, H);
 
         // 2. Subtle Tech Grid & Radial Glow
         ctx.save();
         const radialGlow = ctx.createRadialGradient(W / 2, 680, 50, W / 2, 680, 520);
-        radialGlow.addColorStop(0, accentColor + '25');
+        radialGlow.addColorStop(0, isLight ? accentColor + '18' : accentColor + '25');
         radialGlow.addColorStop(1, 'transparent');
         ctx.fillStyle = radialGlow;
         ctx.fillRect(0, 0, W, H);
 
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.04)';
+        ctx.strokeStyle = isLight ? 'rgba(0, 0, 0, 0.04)' : 'rgba(255, 255, 255, 0.04)';
         ctx.lineWidth = 1.5;
         for (let x = 60; x < W; x += 120) {
             ctx.beginPath();
@@ -52,21 +66,21 @@ const CanvasCardGenerator = {
         ctx.restore();
 
         // 3. Top Header
-        ctx.fillStyle = '#64748b';
+        ctx.fillStyle = isLight ? '#64748b' : '#64748b';
         ctx.font = '700 24px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
         ctx.textAlign = 'center';
         ctx.letterSpacing = '6px';
         ctx.fillText('NEUROCOGNITIVE TELEMETRY REPORT', W / 2, 140);
 
-        ctx.fillStyle = '#f8fafc';
+        ctx.fillStyle = isLight ? '#0f172a' : '#f8fafc';
         ctx.font = '900 68px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
         ctx.letterSpacing = '2px';
         ctx.fillText('DOPAMINESCAN // 60s', W / 2, 220);
 
         // Subtitle pill
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.08)';
+        ctx.fillStyle = isLight ? 'rgba(0, 0, 0, 0.05)' : 'rgba(255, 255, 255, 0.08)';
         this.roundRect(ctx, W / 2 - 240, 260, 480, 48, 24, true, false);
-        ctx.fillStyle = '#94a3b8';
+        ctx.fillStyle = isLight ? '#475569' : '#94a3b8';
         ctx.font = '600 22px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
         ctx.letterSpacing = '1px';
         ctx.fillText('PVT • GO/NO-GO • MEMORY SPAN', W / 2, 292);
@@ -79,7 +93,7 @@ const CanvasCardGenerator = {
         // Background track
         ctx.beginPath();
         ctx.arc(centerX, centerY, radius, Math.PI * 0.8, Math.PI * 2.2, false);
-        ctx.strokeStyle = '#1e293b';
+        ctx.strokeStyle = isLight ? '#cbd5e1' : '#1e293b';
         ctx.lineWidth = 26;
         ctx.lineCap = 'round';
         ctx.stroke();
@@ -95,25 +109,25 @@ const CanvasCardGenerator = {
         ctx.lineWidth = 26;
         ctx.lineCap = 'round';
         ctx.shadowColor = accentColor;
-        ctx.shadowBlur = 35;
+        ctx.shadowBlur = isLight ? 20 : 35;
         ctx.stroke();
         ctx.shadowBlur = 0; // reset
 
         // Inner Circle & Number
-        ctx.fillStyle = '#f8fafc';
+        ctx.fillStyle = isLight ? '#0f172a' : '#f8fafc';
         ctx.font = '900 130px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
         ctx.textAlign = 'center';
         ctx.fillText(result.dsi + '%', centerX, centerY + 20);
 
-        ctx.fillStyle = '#94a3b8';
+        ctx.fillStyle = isLight ? '#64748b' : '#94a3b8';
         ctx.font = '700 22px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
         ctx.letterSpacing = '3px';
         ctx.fillText('DOPAMINE SATURATION', centerX, centerY + 70);
 
         // 5. Archetype Banner
         const bannerY = 960;
-        ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
-        ctx.strokeStyle = accentColor;
+        ctx.fillStyle = isLight ? '#ffffff' : 'rgba(15, 23, 42, 0.85)';
+        ctx.strokeStyle = isLight ? '#e2e8f0' : accentColor;
         ctx.lineWidth = 2;
         this.roundRect(ctx, 100, bannerY, W - 200, 160, 24, true, true);
 
@@ -121,7 +135,7 @@ const CanvasCardGenerator = {
         ctx.textAlign = 'left';
         ctx.fillText(arch.emoji, 140, bannerY + 105);
 
-        ctx.fillStyle = '#f8fafc';
+        ctx.fillStyle = isLight ? '#0f172a' : '#f8fafc';
         ctx.font = '900 46px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
         ctx.letterSpacing = '0px';
         ctx.fillText(arch.name.toUpperCase(), 240, bannerY + 80);
@@ -140,41 +154,46 @@ const CanvasCardGenerator = {
         this.drawMetricCard(
             ctx, 100, cardY, cardW, cardH,
             'VIDA MEDIA ATENCIÓN', result.attentionHalfLife + ' min',
-            'Enfoque continuo antes de distracción', '#06b6d4'
+            'Enfoque continuo antes de distracción', '#0284c7', isLight
         );
 
         // Card 2: Reaction Speed
         this.drawMetricCard(
             ctx, 570, cardY, cardW, cardH,
             'REFLEJOS PSICOMOTORES', result.pvtMeanRt + ' ms',
-            'Latencia real en milisegundos', '#10b981'
+            'Latencia real en milisegundos', '#059669', isLight
         );
 
         // Card 3: Inhibitory Brake
         this.drawMetricCard(
             ctx, 100, cardY + 200, cardW, cardH,
             'FRENO INHIBITORIO', result.gonogoDPrime + ' d\'',
-            'Freno contra scroll compulsivo', '#f59e0b'
+            'Freno contra scroll compulsivo', '#d97706', isLight
         );
 
         // Card 4: Global Rank
         this.drawMetricCard(
             ctx, 570, cardY + 200, cardW, cardH,
             'PERCENTIL POBLACIONAL', 'Top ' + (100 - result.percentile) + '%',
-            'Rendimiento frente a la media', '#8b5cf6'
+            'Rendimiento frente a la media', '#7c3aed', isLight
         );
 
         // 7. Neutral Viral Challenge Banner
         const challengeY = 1600;
         const gradChallenge = ctx.createLinearGradient(100, challengeY, W - 100, challengeY);
-        gradChallenge.addColorStop(0, 'rgba(30, 41, 59, 0.95)');
-        gradChallenge.addColorStop(1, 'rgba(15, 23, 42, 0.95)');
+        if (isLight) {
+            gradChallenge.addColorStop(0, '#ffffff');
+            gradChallenge.addColorStop(1, '#f8fafc');
+        } else {
+            gradChallenge.addColorStop(0, 'rgba(30, 41, 59, 0.95)');
+            gradChallenge.addColorStop(1, 'rgba(15, 23, 42, 0.95)');
+        }
         ctx.fillStyle = gradChallenge;
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
+        ctx.strokeStyle = isLight ? '#cbd5e1' : 'rgba(255, 255, 255, 0.12)';
         ctx.lineWidth = 2;
         this.roundRect(ctx, 100, challengeY, W - 200, 180, 24, true, true);
 
-        ctx.fillStyle = '#f8fafc';
+        ctx.fillStyle = isLight ? '#0f172a' : '#f8fafc';
         ctx.font = '900 36px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
         ctx.textAlign = 'center';
         ctx.fillText('⚡ ¿PUEDES SUPERAR MI ENFOQUE?', W / 2, challengeY + 68);
@@ -185,7 +204,7 @@ const CanvasCardGenerator = {
         ctx.fillText('neurodeveloper11.github.io/dopaminescan', W / 2, challengeY + 120);
 
         // 8. Discreet Scientific Footer
-        ctx.fillStyle = '#475569';
+        ctx.fillStyle = isLight ? '#64748b' : '#475569';
         ctx.font = '600 20px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
         ctx.letterSpacing = '2px';
         ctx.fillText('ENGINEERED UNDER COGNITIVE SCIENCE STANDARDS • MIT OPEN SOURCE', W / 2, 1850);
@@ -193,9 +212,9 @@ const CanvasCardGenerator = {
         return canvas;
     },
 
-    drawMetricCard(ctx, x, y, w, h, label, value, sub, color) {
-        ctx.fillStyle = 'rgba(15, 23, 42, 0.7)';
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+    drawMetricCard(ctx, x, y, w, h, label, value, sub, color, isLight) {
+        ctx.fillStyle = isLight ? '#ffffff' : 'rgba(15, 23, 42, 0.7)';
+        ctx.strokeStyle = isLight ? '#e2e8f0' : 'rgba(255, 255, 255, 0.08)';
         ctx.lineWidth = 1.5;
         this.roundRect(ctx, x, y, w, h, 18, true, true);
 
@@ -203,17 +222,17 @@ const CanvasCardGenerator = {
         ctx.fillStyle = color;
         this.roundRect(ctx, x + 20, y + 16, 32, 4, 2, true, false);
 
-        ctx.fillStyle = '#94a3b8';
+        ctx.fillStyle = isLight ? '#475569' : '#94a3b8';
         ctx.font = '700 18px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
         ctx.textAlign = 'left';
         ctx.letterSpacing = '1.5px';
         ctx.fillText(label, x + 24, y + 52);
 
-        ctx.fillStyle = '#f8fafc';
+        ctx.fillStyle = isLight ? '#0f172a' : '#f8fafc';
         ctx.font = '900 48px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
         ctx.fillText(value, x + 24, y + 110);
 
-        ctx.fillStyle = '#64748b';
+        ctx.fillStyle = isLight ? '#64748b' : '#64748b';
         ctx.font = '500 17px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
         ctx.fillText(sub, x + 24, y + 144);
     },
@@ -224,7 +243,7 @@ const CanvasCardGenerator = {
         ctx.arcTo(x + w, y, x + w, y + h, r);
         ctx.arcTo(x + w, y + h, x, y + h, r);
         ctx.arcTo(x, y + h, x, y, r);
-        ctx.arcTo(x, y, x + w, y, r);
+        ctx.arcTo(x, y + x, y, r);
         ctx.closePath();
         if (fill) ctx.fill();
         if (stroke) ctx.stroke();
@@ -236,7 +255,8 @@ const CanvasCardGenerator = {
     },
 
     download(result) {
-        const canvas = this.render(result);
+        const theme = document.documentElement.getAttribute('data-theme') || 'dark';
+        const canvas = this.render(result, null, theme);
         const link = document.createElement('a');
         link.download = `dopaminescan-${result.archetype.key}-${result.dsi}.png`;
         link.href = canvas.toDataURL('image/png');
@@ -246,10 +266,11 @@ const CanvasCardGenerator = {
     async share(result) {
         const shareText = this.getChallengeText(result);
         const shareUrl = "https://neurodeveloper11.github.io/dopaminescan";
+        const theme = document.documentElement.getAttribute('data-theme') || 'dark';
 
         if (navigator.share) {
             try {
-                const canvas = this.render(result);
+                const canvas = this.render(result, null, theme);
                 canvas.toBlob(async (blob) => {
                     if (blob && navigator.canShare && navigator.canShare({ files: [new File([blob], 'dopaminescan.png', { type: 'image/png' })] })) {
                         const file = new File([blob], 'dopaminescan.png', { type: 'image/png' });
@@ -268,7 +289,7 @@ const CanvasCardGenerator = {
                 });
                 return;
             } catch (err) {
-                // User cancelled or share fallback
+                // Fallback
             }
         }
 

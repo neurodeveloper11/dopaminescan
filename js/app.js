@@ -31,6 +31,46 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let evaluationResult = null;
 
+    // Theme toggle setup (Master Solution: Dark OLED default with quick switch to Blanco Grisáceo)
+    const themeBtn = document.getElementById('theme-toggle-btn');
+    const themeIcon = document.getElementById('theme-icon');
+
+    function applyTheme(theme) {
+        document.documentElement.setAttribute('data-theme', theme);
+        try {
+            localStorage.setItem('dopaminescan_theme', theme);
+        } catch (e) {}
+
+        if (themeIcon) {
+            themeIcon.textContent = theme === 'light' ? '🌙' : '☀️';
+            if (themeBtn) {
+                themeBtn.setAttribute('title', theme === 'light' ? 'Cambiar a modo oscuro (Dark OLED)' : 'Cambiar a modo blanco grisáceo');
+                themeBtn.setAttribute('aria-label', theme === 'light' ? 'Cambiar a modo oscuro' : 'Cambiar a modo blanco grisáceo');
+            }
+        }
+
+        // If results preview is active, re-render card in matching theme
+        const previewCanvas = document.getElementById('card-preview-canvas');
+        if (previewCanvas && evaluationResult && window.CanvasCardGenerator) {
+            window.CanvasCardGenerator.render(evaluationResult, previewCanvas, theme);
+        }
+    }
+
+    let savedTheme = 'dark';
+    try {
+        savedTheme = localStorage.getItem('dopaminescan_theme') || 'dark';
+    } catch (e) {}
+    applyTheme(savedTheme);
+
+    if (themeBtn) {
+        themeBtn.addEventListener('click', () => {
+            window.sounds.playTap();
+            const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+            const nextTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            applyTheme(nextTheme);
+        });
+    }
+
     // Audio mute toggle
     if (muteBtn) {
         muteBtn.addEventListener('click', () => {
@@ -146,7 +186,8 @@ document.addEventListener('DOMContentLoaded', () => {
         // Live preview of Canvas Story Card
         const previewCanvas = document.getElementById('card-preview-canvas');
         if (previewCanvas) {
-            window.CanvasCardGenerator.render(res, previewCanvas);
+            const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+            window.CanvasCardGenerator.render(res, previewCanvas, currentTheme);
         }
 
         // Action Handlers
