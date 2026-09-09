@@ -404,6 +404,30 @@ body {
     transform: scale(0.94);
 }
 
+.pvt-action-btn.state-ready {
+    background: #0f172a;
+    border-color: var(--color-cyan);
+    box-shadow: 0 0 30px rgba(6, 182, 212, 0.35);
+    animation: readyPulse 2s infinite ease-in-out;
+}
+
+.pvt-action-btn.state-ready .pvt-label {
+    color: var(--color-cyan);
+}
+
+.pvt-action-btn.state-countdown {
+    background: #080c14;
+    border-color: var(--color-cyan);
+    box-shadow: 0 0 40px rgba(6, 182, 212, 0.45);
+}
+
+.pvt-action-btn.state-countdown .pvt-icon {
+    font-size: 58px;
+    font-weight: 900;
+    color: var(--color-cyan);
+    animation: popScale 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
 .pvt-action-btn.state-waiting {
     background: #181216;
     border-color: #4a1d24;
@@ -419,6 +443,23 @@ body {
 @keyframes flashScale {
     0% { transform: scale(0.92); }
     100% { transform: scale(1); }
+}
+
+@keyframes readyPulse {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 0 22px rgba(6, 182, 212, 0.25);
+    }
+    50% {
+        transform: scale(1.03);
+        box-shadow: 0 0 38px rgba(6, 182, 212, 0.5);
+    }
+}
+
+@keyframes popScale {
+    0% { transform: scale(0.6); opacity: 0; }
+    70% { transform: scale(1.15); opacity: 1; }
+    100% { transform: scale(1); opacity: 1; }
 }
 
 .pvt-action-btn.state-penalty {
@@ -481,6 +522,30 @@ body {
 
 .gonogo-target-btn:active {
     transform: scale(0.95);
+}
+
+.gonogo-target-btn.state-ready {
+    background: #0f172a;
+    border-color: var(--color-cyan);
+    box-shadow: 0 0 30px rgba(6, 182, 212, 0.35);
+    animation: readyPulse 2s infinite ease-in-out;
+}
+
+.gonogo-target-btn.state-ready .gonogo-text {
+    color: var(--color-cyan);
+}
+
+.gonogo-target-btn.state-countdown {
+    background: #080c14;
+    border-color: var(--color-cyan);
+    box-shadow: 0 0 40px rgba(6, 182, 212, 0.45);
+}
+
+.gonogo-target-btn.state-countdown .gonogo-symbol {
+    font-size: 58px;
+    font-weight: 900;
+    color: var(--color-cyan);
+    animation: popScale 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .gonogo-target-btn.state-go {
@@ -844,6 +909,29 @@ body {
     background: #ffffff;
     border-color: #e2e8f0;
     box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.06);
+}
+
+[data-theme="light"] .pvt-action-btn.state-ready,
+[data-theme="light"] .gonogo-target-btn.state-ready {
+    background: #ecfeff;
+    border-color: #06b6d4;
+    box-shadow: 0 4px 20px rgba(6, 182, 212, 0.25);
+}
+
+[data-theme="light"] .pvt-action-btn.state-ready .pvt-label,
+[data-theme="light"] .gonogo-target-btn.state-ready .gonogo-text {
+    color: #0891b2;
+}
+
+[data-theme="light"] .pvt-action-btn.state-countdown,
+[data-theme="light"] .gonogo-target-btn.state-countdown {
+    background: #f0fdfa;
+    border-color: #0d9488;
+}
+
+[data-theme="light"] .pvt-action-btn.state-countdown .pvt-icon,
+[data-theme="light"] .gonogo-target-btn.state-countdown .gonogo-symbol {
+    color: #0f766e;
 }
 
 [data-theme="light"] .pvt-action-btn.state-waiting {

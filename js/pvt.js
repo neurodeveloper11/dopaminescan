@@ -13,6 +13,7 @@ class PVTPhase {
         this.anticipations = 0;
         this.state = 'IDLE'; // 'WAITING', 'ACTIVE', 'PENALTY'
         this.timeoutId = null;
+        this.countdownTimer = null;
         this.triggerTime = 0;
         this.animFrameId = null;
 
@@ -24,7 +25,7 @@ class PVTPhase {
             <div class="phase-card pvt-card" id="pvt-target-zone">
                 <div class="phase-header">
                     <span class="badge badge-cyan">FASE 1 DE 4</span>
-                    <span class="trial-counter" id="pvt-counter">Ensayo 1 de 3</span>
+                    <span class="trial-counter" id="pvt-counter">Preparación (Ensayo 1 de 3)</span>
                 </div>
                 <h2 class="phase-title">Reflejos Psicomotores (PVT)</h2>
                 <p class="phase-instruction" id="pvt-instruction">
@@ -32,15 +33,15 @@ class PVTPhase {
                 </p>
 
                 <div class="pvt-button-wrapper">
-                    <button class="pvt-action-btn state-waiting" id="pvt-btn" type="button">
-                        <span class="pvt-icon" id="pvt-icon">🔴</span>
-                        <span class="pvt-label" id="pvt-label">ESPERA LA SEÑAL...</span>
-                        <span class="pvt-timer" id="pvt-timer">0 ms</span>
+                    <button class="pvt-action-btn state-ready" id="pvt-btn" type="button">
+                        <span class="pvt-icon" id="pvt-icon">👆</span>
+                        <span class="pvt-label" id="pvt-label">¡ESTOY LISTO!</span>
+                        <span class="pvt-timer" id="pvt-timer">Toca para empezar</span>
                     </button>
                 </div>
 
                 <div class="phase-footer-feedback" id="pvt-feedback">
-                    Mantén el dedo listo sobre el botón
+                    Lee la instrucción arriba y toca el botón cuando estés listo
                 </div>
             </div>
         `;
@@ -65,7 +66,47 @@ class PVTPhase {
         this.currentTrial = 0;
         this.reactionTimes = [];
         this.anticipations = 0;
-        this.nextTrial();
+        this.state = 'READY';
+
+        this.pvtBtn.className = 'pvt-action-btn state-ready';
+        this.pvtIcon.textContent = '👆';
+        this.pvtLabel.textContent = '¡ESTOY LISTO!';
+        this.pvtTimer.textContent = 'Toca para empezar';
+        this.pvtTimer.style.opacity = '0.7';
+        this.pvtFeedback.textContent = 'Lee la instrucción arriba y toca el botón cuando estés listo';
+        this.pvtFeedback.className = 'phase-footer-feedback';
+        this.pvtCounter.textContent = 'Preparación (Ensayo 1 de 3)';
+    }
+
+    startCountdown() {
+        this.state = 'COUNTDOWN';
+        this.pvtBtn.className = 'pvt-action-btn state-countdown';
+        this.pvtTimer.style.opacity = '0';
+
+        let count = 3;
+        const steps = {
+            3: { label: 'PREPÁRATE...', feedback: 'Apoya tu pulgar sobre el botón', freq: 440 },
+            2: { label: 'ATENTO...', feedback: 'Enfoca tu mirada en el centro', freq: 554.37 },
+            1: { label: '¡CONCÉNTRATE!', feedback: 'En cualquier milisegundo cambiará a verde...', freq: 659.25 }
+        };
+
+        const tick = () => {
+            if (count > 0) {
+                this.pvtIcon.textContent = count;
+                this.pvtLabel.textContent = steps[count].label;
+                this.pvtFeedback.textContent = steps[count].feedback;
+                this.pvtFeedback.className = 'phase-footer-feedback text-cyan';
+                if (window.sounds && window.sounds.playNote) {
+                    window.sounds.playNote(steps[count].freq, 0.15);
+                }
+                count--;
+                this.countdownTimer = setTimeout(tick, 950);
+            } else {
+                this.nextTrial();
+            }
+        };
+
+        tick();
     }
 
     nextTrial() {
@@ -89,6 +130,7 @@ class PVTPhase {
         // Random jitter delay between 1,600ms and 3,600ms
         const jitterMs = Math.floor(Math.random() * 2000) + 1600;
         clearTimeout(this.timeoutId);
+        clearTimeout(this.countdownTimer);
         this.timeoutId = setTimeout(() => this.triggerStimulus(), jitterMs);
     }
 
@@ -116,6 +158,16 @@ class PVTPhase {
     }
 
     handleTap() {
+        if (this.state === 'READY') {
+            if (window.sounds) window.sounds.playTap();
+            this.startCountdown();
+            return;
+        }
+
+        if (this.state === 'COUNTDOWN') {
+            return;
+        }
+
         if (this.state === 'WAITING') {
             // Anticipation / False Start
             clearTimeout(this.timeoutId);

@@ -47,14 +47,14 @@ class GoNoGoPhase {
                 </p>
 
                 <div class="gonogo-arena">
-                    <button class="gonogo-target-btn" id="gonogo-btn" type="button">
-                        <div class="gonogo-symbol" id="gonogo-symbol">⚡</div>
-                        <div class="gonogo-text" id="gonogo-text">LISTO...</div>
+                    <button class="gonogo-target-btn state-ready" id="gonogo-btn" type="button">
+                        <div class="gonogo-symbol" id="gonogo-symbol">👆</div>
+                        <div class="gonogo-text" id="gonogo-text">¡ESTOY LISTO!</div>
                     </button>
                 </div>
 
                 <div class="phase-footer-feedback" id="gonogo-feedback">
-                    Simula la resistencia al scroll compulsivo
+                    Lee la regla arriba y toca el botón cuando estés listo
                 </div>
             </div>
         `;
@@ -64,6 +64,8 @@ class GoNoGoPhase {
         this.gonogoText = document.getElementById('gonogo-text');
         this.gonogoFeedback = document.getElementById('gonogo-feedback');
         this.gonogoCounter = document.getElementById('gonogo-counter');
+        this.countdownTimer = null;
+        this.state = 'IDLE';
 
         this.gonogoBtn.addEventListener('pointerdown', (e) => {
             e.preventDefault();
@@ -76,17 +78,45 @@ class GoNoGoPhase {
         this.hits = 0;
         this.falseAlarms = 0;
         this.goReactionTimes = [];
+        this.state = 'READY';
 
-        this.gonogoSymbol.textContent = '3';
-        this.gonogoText.textContent = 'INICIANDO...';
+        this.gonogoBtn.className = 'gonogo-target-btn state-ready';
+        this.gonogoSymbol.textContent = '👆';
+        this.gonogoText.textContent = '¡ESTOY LISTO!';
+        this.gonogoFeedback.textContent = 'Lee la regla arriba y toca el botón cuando estés listo';
+        this.gonogoFeedback.className = 'phase-footer-feedback';
+        this.gonogoCounter.textContent = 'Preparación (8 ensayos)';
+    }
 
-        setTimeout(() => {
-            this.gonogoSymbol.textContent = '2';
-            setTimeout(() => {
-                this.gonogoSymbol.textContent = '1';
-                setTimeout(() => this.nextTrial(), 600);
-            }, 500);
-        }, 500);
+    startCountdown() {
+        this.state = 'COUNTDOWN';
+        this.gonogoBtn.className = 'gonogo-target-btn state-countdown';
+
+        let count = 3;
+        const steps = {
+            3: { symbol: '3', text: 'PREPÁRATE...', feedback: 'Verde = ¡TOCA! | Rojo = ¡FRENA!', freq: 440 },
+            2: { symbol: '2', text: 'ATENTO...', feedback: 'Mantén el pulgar listo', freq: 554.37 },
+            1: { symbol: '1', text: '¡CONCÉNTRATE!', feedback: 'Frena el impulso si ves rojo', freq: 659.25 }
+        };
+
+        const tick = () => {
+            if (count > 0) {
+                this.gonogoSymbol.textContent = steps[count].symbol;
+                this.gonogoText.textContent = steps[count].text;
+                this.gonogoFeedback.textContent = steps[count].feedback;
+                this.gonogoFeedback.className = 'phase-footer-feedback text-emerald';
+                if (window.sounds && window.sounds.playNote) {
+                    window.sounds.playNote(steps[count].freq, 0.15);
+                }
+                count--;
+                this.countdownTimer = setTimeout(tick, 950);
+            } else {
+                this.state = 'ACTIVE_TEST';
+                this.nextTrial();
+            }
+        };
+
+        tick();
     }
 
     nextTrial() {
@@ -144,6 +174,14 @@ class GoNoGoPhase {
     }
 
     handleTap() {
+        if (this.state === 'READY') {
+            if (window.sounds) window.sounds.playTap();
+            this.startCountdown();
+            return;
+        }
+
+        if (this.state === 'COUNTDOWN') return;
+
         if (!this.trialActive || this.hasResponded) return;
 
         this.hasResponded = true;
@@ -168,6 +206,7 @@ class GoNoGoPhase {
 
     finish() {
         clearTimeout(this.trialTimer);
+        clearTimeout(this.countdownTimer);
         const meanGoRt = this.goReactionTimes.length
             ? this.goReactionTimes.reduce((a, b) => a + b, 0) / this.goReactionTimes.length
             : 350;
