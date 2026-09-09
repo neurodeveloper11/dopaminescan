@@ -52,12 +52,15 @@ async def health_check() -> HealthCheckResponse:
 BASE_DIR = Path(__file__).resolve().parent.parent
 STATIC_CSS = BASE_DIR / "css"
 STATIC_JS = BASE_DIR / "js"
+STATIC_ASSETS = BASE_DIR / "assets"
 INDEX_FILE = BASE_DIR / "index.html"
 
 if STATIC_CSS.exists():
     app.mount("/css", StaticFiles(directory=str(STATIC_CSS)), name="css")
 if STATIC_JS.exists():
     app.mount("/js", StaticFiles(directory=str(STATIC_JS)), name="js")
+if STATIC_ASSETS.exists():
+    app.mount("/assets", StaticFiles(directory=str(STATIC_ASSETS)), name="assets")
 
 
 @app.get("/", include_in_schema=False)

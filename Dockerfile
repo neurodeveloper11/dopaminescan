@@ -16,6 +16,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY src/ ./src/
 COPY css/ ./css/
 COPY js/ ./js/
+COPY assets/ ./assets/
 COPY index.html .
 COPY LICENSE .
 
