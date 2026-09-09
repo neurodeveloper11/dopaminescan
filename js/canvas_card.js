@@ -238,12 +238,24 @@ const CanvasCardGenerator = {
     },
 
     roundRect(ctx, x, y, w, h, r, fill, stroke) {
+        if (typeof ctx.roundRect === 'function') {
+            ctx.beginPath();
+            ctx.roundRect(x, y, w, h, r);
+            if (fill) ctx.fill();
+            if (stroke) ctx.stroke();
+            return;
+        }
+        // Universal quadratic curve fallback (compatible across all Canvas engines)
         ctx.beginPath();
         ctx.moveTo(x + r, y);
-        ctx.arcTo(x + w, y, x + w, y + h, r);
-        ctx.arcTo(x + w, y + h, x, y + h, r);
-        ctx.arcTo(x, y + h, x, y, r);
-        ctx.arcTo(x, y + x, y, r);
+        ctx.lineTo(x + w - r, y);
+        ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+        ctx.lineTo(x + w, y + h - r);
+        ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+        ctx.lineTo(x + r, y + h);
+        ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+        ctx.lineTo(x, y + r);
+        ctx.quadraticCurveTo(x, y, x + r, y);
         ctx.closePath();
         if (fill) ctx.fill();
         if (stroke) ctx.stroke();
@@ -255,50 +267,77 @@ const CanvasCardGenerator = {
     },
 
     download(result) {
-        const theme = document.documentElement.getAttribute('data-theme') || 'dark';
-        const canvas = this.render(result, null, theme);
-        const link = document.createElement('a');
-        link.download = `dopaminescan-${result.archetype.key}-${result.dsi}.png`;
-        link.href = canvas.toDataURL('image/png');
-        link.click();
+        try {
+            const theme = (document.documentElement && document.documentElement.getAttribute('data-theme')) || 'dark';
+            const canvas = this.render(result, null, theme);
+            const fileName = `dopaminescan-${result.archetype.key}-${result.dsi}.png`;
+
+            const dataUrl = canvas.toDataURL('image/png');
+            const link = document.createElement('a');
+            link.download = fileName;
+            link.href = dataUrl;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        } catch (err) {
+            console.error('Error downloading card:', err);
+            alert('No se pudo descargar automáticamente. Puedes hacer clic derecho sobre la tarjeta y guardarla como imagen.');
+        }
     },
 
     async share(result) {
         const shareText = this.getChallengeText(result);
         const shareUrl = "https://neurodeveloper11.github.io/dopaminescan";
-        const theme = document.documentElement.getAttribute('data-theme') || 'dark';
+        const theme = (document.documentElement && document.documentElement.getAttribute('data-theme')) || 'dark';
 
         if (navigator.share) {
             try {
                 const canvas = this.render(result, null, theme);
-                canvas.toBlob(async (blob) => {
-                    if (blob && navigator.canShare && navigator.canShare({ files: [new File([blob], 'dopaminescan.png', { type: 'image/png' })] })) {
-                        const file = new File([blob], 'dopaminescan.png', { type: 'image/png' });
-                        await navigator.share({
-                            title: 'DopamineScan 60s Test',
-                            text: shareText,
-                            files: [file],
-                        });
-                    } else {
-                        await navigator.share({
-                            title: 'DopamineScan 60s Test',
-                            text: shareText,
-                            url: shareUrl,
-                        });
-                    }
-                });
-                return;
+                if (canvas.toBlob) {
+                    canvas.toBlob(async (blob) => {
+                        try {
+                            const file = new File([blob], 'dopaminescan.png', { type: 'image/png' });
+                            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                                await navigator.share({
+                                    title: 'DopamineScan 60s Test',
+                                    text: shareText,
+                                    files: [file],
+                                });
+                                return;
+                            }
+                        } catch (e) {}
+
+                        try {
+                            await navigator.share({
+                                title: 'DopamineScan 60s Test',
+                                text: shareText,
+                                url: shareUrl,
+                            });
+                        } catch (e) {
+                            this._desktopFallbackShare(result, shareText);
+                        }
+                    }, 'image/png');
+                    return;
+                }
             } catch (err) {
                 // Fallback
             }
         }
 
-        // Fallback: Copy to clipboard
+        // Desktop / Fallback Share
+        this._desktopFallbackShare(result, shareText);
+    },
+
+    _desktopFallbackShare(result, shareText) {
+        this.download(result);
         try {
-            await navigator.clipboard.writeText(shareText);
-            alert("¡Texto del reto copiado al portapapeles! Pégalo en tu WhatsApp, Story o red social.");
+            navigator.clipboard.writeText(shareText).then(() => {
+                alert("¡Tarjeta HD descargada y texto del reto copiado al portapapeles! 📲🚀\n\nPégalo en WhatsApp, Facebook, Twitter o en tus historias.");
+            }).catch(() => {
+                prompt("Tarjeta descargada. Copia tu texto para compartir:", shareText);
+            });
         } catch (e) {
-            prompt("Copia tu texto del reto:", shareText);
+            prompt("Tarjeta descargada. Copia tu texto para compartir:", shareText);
         }
     }
 };

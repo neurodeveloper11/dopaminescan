@@ -769,6 +769,24 @@ body {
     margin-bottom: 24px;
 }
 
+.session-certified-badge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 16px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px dashed var(--border-glow);
+    border-radius: var(--radius-md);
+    color: var(--text-muted);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    width: 100%;
+    margin-top: 4px;
+}
+
 /* Footer (Discreet, Scientific) */
 .app-footer {
     text-align: center;
@@ -895,5 +913,11 @@ body {
 
 [data-theme="light"] .btn-secondary:active {
     background: #f1f5f9;
+}
+
+[data-theme="light"] .session-certified-badge {
+    background: #ffffff;
+    border-color: #cbd5e1;
+    color: #64748b;
 }
 

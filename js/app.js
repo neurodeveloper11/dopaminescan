@@ -228,14 +228,5 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             };
         }
-
-        if (btnRestart) {
-            btnRestart.onclick = (e) => {
-                e.preventDefault();
-                window.sounds.playTap();
-                showScreen('intro');
-                setProgress(0);
-            };
-        }
     }
 });
